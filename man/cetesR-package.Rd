@@ -6,7 +6,7 @@
 \alias{cetesR-package}
 \title{cetesR: Reunir y analizar informacion de los valores gubernamentales en México}
 \description{
-Obtener informacion de banxico y diversos brokers para la valuacion y analisis de valores gubernamentales de M¿éxico.
+Obtener informacion de banxico y diversos.
 }
 \seealso{
 Useful links:

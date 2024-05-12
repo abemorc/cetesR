@@ -7,8 +7,7 @@ Authors@R: c(
            family = c("Morales", "Calva"),
            role = c("aut", "cre"),
            email = "abemorca@gmail.com"))
-Description: Obtener informacion de banxico y diversos brokers para la valuacion
-    y analisis de valores gubernamentales de M¿éxico.
+Description: Obtener informacion de banxico y diversos.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
