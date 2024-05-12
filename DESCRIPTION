@@ -1,13 +1,14 @@
 Package: cetesR
 Date: 2024-05-01 
-Title: What the Package Does (One Line, Title Case)
+Title: Reunir y analizar informacion de los valores gubernamentales en México
 Version: 0.0.0.9000
 Authors@R: c(
     person(given = "Abelardo",
            family = c("Morales", "Calva"),
            role = c("aut", "cre"),
            email = "abemorca@gmail.com"))
-Description: What the package does (one paragraph).
+Description: Obtener informacion de banxico y diversos brokers para la valuacion
+    y analisis de valores gubernamentales de M¿éxico.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -21,3 +22,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Imports: 
+

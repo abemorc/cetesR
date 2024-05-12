@@ -8,7 +8,7 @@
 #'   \item{Instrumento}{Nombre del instrumento financiero}
 #'   \item{Plazo}{Número de días o años asignados en la subasta semanal}
 #'   \item{Monto_Asignado}{Cantidad de dinero asignada por el banco nacional a este int}
-#'   \item{col2}{col2 description}
+#'   \item{Tasa_Rendimiento}{Rendimiento}
 #' }
-#' @source \url{data_URL}
-"dataname"
+#' @source \url{Banxico}
+"catalogo_series"

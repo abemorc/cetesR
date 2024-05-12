@@ -18,38 +18,57 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of cetesR is to ...
+Herramientas para trabajar con valores gubernamentales de México
 
-## Installation
+## Instalación
 
-You can install the development version of cetesR from [GitHub](https://github.com/) with:
+Usted puede instalar este paquete en su distribucion de R desde [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("abemorc/cetesR")
 ```
 
-## Example
+## Ojetivo
 
-This is a basic example which shows you how to solve a common problem:
+Poder obtener y  analizar informacón actualizada relacionada a los valores gubernamentales
 
 ```{r example}
-#library(cetesR)
-## basic example code
+library(cetesR)
+## Aqui ira un ejemplo
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Uso
 
-```{r cars}
-summary(cars)
+Estos son los principales instrumentos  que se puede evaluar
+```{r catalogo}
+
+catalogo_series
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r}
+summary(catalogo_series)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+
+Calculo del precio asi como de las fechas exactas de la inversión, considerando el calendario festivo´de México.
+
+```{r fechas, include=FALSE}
+## ejemplo fechas
+library(timeperiodsR)
+pm <- previous_month()
+pm_workdays <- workdays(pm)
+```
+
+
+```{r}
+pm_workdays
+```
+
+
+# Importante
+
+Esta version aun no esta terminada, falta corregir algunos bugs
+
+
