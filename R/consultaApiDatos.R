@@ -3,7 +3,7 @@
 
 # Consulta desde la api de banxico
 
-# ejemplo <- consultaAPi("SF43936", my_start, my_end, token = token)
+
 
 #' Consulta de datos en la API de banxico
 #'
@@ -17,22 +17,20 @@
 #'   obtenerlo en la pagina de
 #'   [Banxico](https://www.banxico.org.mx/SieAPIRest/service/v1/token)
 #' @param idioma `character`  Idioma para la consulta de los metadatos.
-#'    * es Español
-#'    * en Inglés
+#'    * "es" Español
+#'    * "en" Inglés
 #'
 #'
 #' @return [data.frame()] con las siguientes columnas:
-#'    * Fecha
-#'    * Valor
+#'    * **Fecha**
+#'    * **Código de la serie**
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' token <- "fb88d18e41bebb656375cd9b4db5878253b564b3742935ca96c9bd9fb67e1274"
+#' datos <- consultaApiDatos("SF43936", '2020-01-01', Sys.Date(), token = token)
 #'
-#' token <- "tu token"
-#' datos <- consultaAPi("SF43936", '2015-01-01', Sys.Date(), token = token)
-#' }
-consultaAPiDatos <- function(codigo, fechaInicial = NULL, fechaFinal = NULL,
+consultaApiDatos <- function(codigo, fechaInicial = NULL, fechaFinal = NULL,
                              token,
                              idioma="es") {
 
@@ -76,5 +74,6 @@ consultaAPiDatos <- function(codigo, fechaInicial = NULL, fechaFinal = NULL,
     stop(paste(mensaje,": ",detalle))
   }
 }
+
 
 
