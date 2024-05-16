@@ -1,4 +1,7 @@
 url: https://abemorc.github.io/cetesR/
 template:
   bootstrap: 5
-
+footer:
+  structure:
+    left: developed_by
+    right: package
