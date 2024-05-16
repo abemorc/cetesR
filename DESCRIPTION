@@ -22,5 +22,10 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 Imports: 
+    dplyr,
     httr,
-    jsonlite
+    jsonlite,
+    lubridate,
+    rvest,
+    utils,
+    xml2

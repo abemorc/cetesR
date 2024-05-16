@@ -13,12 +13,24 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r}
+
+```
+
+
 # cetesR
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/cetesR)](https://CRAN.R-project.org/package=cetesR)
 <!-- badges: end -->
 
 Herramientas para trabajar con valores gubernamentales de México
+
+```{r include=FALSE}
+token <- '98f028f762387fd81728858fca4cc4e1ddaa4c538e3d6209f256a6a0ef25021b'
+```
+
+
 
 ## Instalación
 
@@ -33,12 +45,18 @@ devtools::install_github("abemorc/cetesR")
 
 Poder obtener y  analizar informacón actualizada relacionada a los valores gubernamentales
 
-```{r example}
+## Uso
+
+```{r example, echo=TRUE}
 library(cetesR)
-## Aqui ira un ejemplo
+
+token <- '98f028f762387fd81728858fca4cc4e1ddaa4c538e3d6209f256a6a0ef25021b'
+
+getBono(bono = 'cetes28', fechaInicial = '2023-12-01', fechaFinal = Sys.Date(), token)
+
 ```
 
-## Uso
+
 
 Estos son los principales instrumentos  que se puede evaluar
 ```{r catalogo}
@@ -52,23 +70,31 @@ summary(catalogo_series)
 ```
 
 
-Calculo del precio asi como de las fechas exactas de la inversión, considerando el calendario festivo´de México.
+Obtener la informacion correspondiente al instrumento financiero
 
-```{r fechas, include=FALSE}
-## ejemplo fechas
-library(timeperiodsR)
-pm <- previous_month()
-pm_workdays <- workdays(pm)
+```{r fechas, echo=TRUE}
+
+webscrapBonos()
+
 ```
 
+Ejemplo de consulta del la informacion correspondiente a la ultima subasta de los cetes
 
 ```{r}
-pm_workdays
+datos <- consultaApiDatoUltimo("SF43936", token = token)
+```
+
+Ejemplo de los metadatos obtenidos
+```{r}
+consultaApiMeta("SF43936", token = token)
+```
+
+Ejemplo del historico de datos de los cetes
+```{r}
+consultaApiDatos("SF43936", '2023-11-01' ,Sys.Date(), token = token)
 ```
 
 
-# Importante
-
-Esta version aun no esta terminada, falta corregir algunos bugs
+Informacion obtenida de www.banxico.com
 
 

@@ -3,3 +3,5 @@
 export(consultaApiDatoUltimo)
 export(consultaApiDatos)
 export(consultaApiMeta)
+export(getBono)
+export(webscrapBonos)

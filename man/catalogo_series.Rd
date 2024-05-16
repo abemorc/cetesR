@@ -9,8 +9,8 @@ A data frame with 16 rows and 4 variables:
 \describe{
 \item{Instrumento}{Nombre del instrumento financiero}
 \item{Plazo}{Número de días o años asignados en la subasta semanal}
-\item{Monto_Asignado}{Cantidad de dinero asignada por el banco nacional a este int}
-\item{Tasa_Rendimiento}{Rendimiento}
+\item{Monto_Asignado}{Cantidad de dinero asignada por el banco nacional a este intrumento}
+\item{Tasa_Rendimiento}{Tasa de rendimiento derivada de la subasta semanal}
 }
 }
 \source{
