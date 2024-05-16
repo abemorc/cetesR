@@ -12,12 +12,13 @@ Obtener informacion de banxico y diversos.
 Useful links:
 \itemize{
   \item \url{https://github.com/abemorc/cetesR}
+  \item \url{https://abemorc.github.io/cetesR/}
   \item Report bugs at \url{https://github.com/abemorc/cetesR/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Abelardo Morales Calva \email{abemorca@gmail.com}
+\strong{Maintainer}: Abelardo Morales \email{abemorca@gmail.com}
 
 }
 \keyword{internal}
