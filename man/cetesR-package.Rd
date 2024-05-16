@@ -6,7 +6,7 @@
 \alias{cetesR-package}
 \title{cetesR: Reunir y analizar informacion de los valores gubernamentales en México}
 \description{
-Obtener informacion de banxico y diversos.
+Obtener informacion de banxico y diversos instrumentos financieros.
 }
 \seealso{
 Useful links:
@@ -19,6 +19,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Abelardo Morales \email{abemorca@gmail.com}
+
+Authors:
+\itemize{
+  \item Martin Medina \email{martin_medina0308@hotmail.com}
+}
 
 }
 \keyword{internal}
