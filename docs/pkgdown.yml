@@ -1,0 +1,11 @@
+pandoc: 3.1.11
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  ejem-articl: ejem-articl.html
+  ejem: ejem.html
+last_built: 2024-05-16T11:49Z
+urls:
+  reference: https://abemorc.github.io/cetesR/reference
+  article: https://abemorc.github.io/cetesR/articles
+
