@@ -20,10 +20,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Abelardo Morales \email{abemorca@gmail.com}
 
-Authors:
-\itemize{
-  \item Martin Medina \email{martin_medina0308@hotmail.com}
-}
-
 }
 \keyword{internal}

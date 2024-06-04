@@ -6,11 +6,7 @@ Authors@R: c(
     person(given = "Abelardo",
            family = c("Morales"),
            role = c("aut", "cre"),
-           email = "abemorca@gmail.com"),
-    person(given = "Martin",
-           family = "Medina",
-           role = c("aut"),
-           email = "martin_medina0308@hotmail.com"))
+           email = "abemorca@gmail.com"))
 Description: Obtener informacion de banxico y diversos instrumentos financieros.
 License: MIT + file LICENSE
 Encoding: UTF-8
