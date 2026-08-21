@@ -1,0 +1,6 @@
+# Observaciones
+
+``` r
+
+library(cetesR)
+```
