@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/ejem-articl: ejem-articl.html
   ejem: ejem.html
-last_built: 2026-08-21T09:02Z
+last_built: 2026-08-21T11:03Z
 urls:
   reference: https://abemorc.github.io/cetesR/reference
   article: https://abemorc.github.io/cetesR/articles
