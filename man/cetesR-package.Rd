@@ -4,9 +4,24 @@
 \name{cetesR-package}
 \alias{cetesR}
 \alias{cetesR-package}
-\title{cetesR: Reunir y analizar informacion de los valores gubernamentales en México}
+\title{cetesR: Herramientas para Valores Gubernamentales de México}
 \description{
-Obtener informacion de banxico y diversos instrumentos financieros.
+El paquete \code{cetesR} proporciona funciones para consultar, procesar y
+analizar información financiera de los valores gubernamentales de México
+(CETES, Bonos M y Udibonos). Extrae datos directamente desde la API oficial
+del Banco de México (Banxico) y complementa las series con cotizaciones
+del mercado secundario.
+}
+\details{
+Las funciones principales incluidas en el paquete son:
+\itemize{
+\item \code{\link{getBono}}: Función principal para obtener el historial consolidado, plazos, montos y tasas de un bono.
+\item \code{\link{set_banxico_token}}: Administrador para configurar el token de la API de Banxico.
+\item \code{\link{consultaApiDatos}}: Consulta directa de series históricas en la API de Banxico.
+\item \code{\link{consultaApiDatoUltimo}}: Consulta del dato más reciente publicado para una serie.
+\item \code{\link{consultaApiMeta}}: Extracción de metadatos de las series de Banxico.
+\item \code{\link{catalogo_series}}: Dataset interno con la tabla de mapeo de identificadores y series.
+}
 }
 \seealso{
 Useful links:
@@ -18,7 +33,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Abelardo Morales \email{abemorca@gmail.com}
+\strong{Maintainer}: Abelardo Morales Calva \email{abemorca@gmail.com}
+
+Authors:
+\itemize{
+  \item Abelardo Morales Calva \email{abemorca@gmail.com}
+}
 
 }
 \keyword{internal}

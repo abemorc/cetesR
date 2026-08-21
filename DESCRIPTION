@@ -4,18 +4,17 @@ Title: Reunir y analizar informacion de los valores gubernamentales en México
 Version: 0.0.0.9000
 Authors@R: c(
     person(given = "Abelardo",
-           family = c("Morales"),
+           family = c("Morales Calva"),
            role = c("aut", "cre"),
            email = "abemorca@gmail.com"))
 Description: Obtener informacion de banxico y diversos instrumentos financieros.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
 URL: https://github.com/abemorc/cetesR, https://abemorc.github.io/cetesR/
 BugReports: https://github.com/abemorc/cetesR/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 LazyData: true
 Suggests: 
     knitr,
@@ -29,3 +28,4 @@ Imports:
     rvest,
     utils,
     xml2
+Config/roxygen2/version: 8.1.0

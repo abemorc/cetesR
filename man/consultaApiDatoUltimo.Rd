@@ -2,30 +2,47 @@
 % Please edit documentation in R/consultaApiDatoUltimo.R
 \name{consultaApiDatoUltimo}
 \alias{consultaApiDatoUltimo}
-\title{Consulta del valor mas reciente de la serie de datos}
+\title{Consulta del Valor Más Reciente de una Serie}
 \usage{
-consultaApiDatoUltimo(codigo, token)
+consultaApiDatoUltimo(codigo, token = Sys.getenv("BANXICO_TOKEN"))
 }
 \arguments{
-\item{codigo}{Código de la serie de tiempo a consultar, puede consultar el
-código mediante \code{\link[=catalogo_series]{catalogo_series()}}.}
+\item{codigo}{\code{character} Código exacto de la serie de tiempo a consultar.
+Puede buscar el código correspondiente a cada instrumento mediante el dataset interno \code{catalogo_series}.}
 
-\item{token}{Token proporcionado por Banxico para la consulta. Puede
-obtenerlo en la pagina de
-\href{https://www.banxico.org.mx/SieAPIRest/service/v1/token}{Banxico}}
+\item{token}{\code{character}. Token de autenticación proporcionado por Banxico.
+Por defecto, lo busca en la variable de entorno \code{BANXICO_TOKEN}.
+Se recomienda configurarlo previamente con \code{set_banxico_token()}.}
 }
 \value{
-\code{\link[=data.frame]{data.frame()}} con las siguientes columnas:
+Un \code{data.frame} de una sola fila con las siguientes columnas:
 \itemize{
-\item \strong{Fecha}
-\item \strong{Código de la serie}
+\item \strong{Fecha}: Clase \code{Date} correspondiente a la observación.
+\item \strong{Código de la serie}: Clase \code{numeric} con el valor oportuno.
 }
 }
 \description{
-Consulta del valor mas reciente de la serie de datos
+Extrae el último dato oportuno publicado para una serie de tiempo específica
+directamente desde la API del Banco de México (Banxico).
+}
+\details{
+A diferencia de \code{consultaApiDatos} que extrae un rango histórico, esta
+función utiliza el endpoint \code{/datos/oportuno} para obtener exclusivamente
+la observación más reciente disponible. Es ideal para actualizar análisis,
+documentos o paneles de control con la última subasta sin tener que descargar
+todo el historial.
+
+Procesa automáticamente la respuesta, convirtiendo la fecha a clase \code{Date}
+y el valor a clase \code{numeric}. Incluye manejo de errores HTTP estructurado.
 }
 \examples{
-token <- "fb88d18e41bebb656375cd9b4db5878253b564b3742935ca96c9bd9fb67e1274"
-datos <- consultaApiDatoUltimo("SF43936", token = token)
+\dontrun{
+# 1. Asegúrate de tener configurado tu token
+# set_banxico_token("TU_TOKEN_AQUI")
 
+# 2. Obtener el último dato de la Tasa de rendimiento de CETES 28
+ultimo_cetes <- consultaApiDatoUltimo(codigo = "SF43936")
+
+print(ultimo_cetes)
+}
 }

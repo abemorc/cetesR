@@ -2,42 +2,55 @@
 % Please edit documentation in R/consutaApiMeta.R
 \name{consultaApiMeta}
 \alias{consultaApiMeta}
-\title{Consulta de metadatos en la API de banxico}
+\title{Consulta de Metadatos en la API de Banxico}
 \usage{
-consultaApiMeta(codigo, token, idioma = "es")
+consultaApiMeta(codigo, token = Sys.getenv("BANXICO_TOKEN"), idioma = "es")
 }
 \arguments{
-\item{codigo}{Código de la serie de tiempo a consultar, puede consultar el
-código mediante \code{\link[=catalogo_series]{catalogo_series()}}.}
+\item{codigo}{\code{character} Código exacto de la serie de tiempo a consultar.
+Puede buscar el código correspondiente a cada instrumento mediante el dataset interno \code{catalogo_series}.}
 
-\item{token}{Token proporcionado por Banxico para la consulta. Puede
-obtenerlo en la pagina de
-\href{https://www.banxico.org.mx/SieAPIRest/service/v1/token}{Banxico}}
+\item{token}{\code{character}. Token de autenticación proporcionado por Banxico.
+Por defecto, lo busca en la variable de entorno \code{BANXICO_TOKEN}.
+Se recomienda configurarlo previamente con \code{set_banxico_token()}.}
 
-\item{idioma}{\code{character}  Idioma para la consulta de los metadatos.
+\item{idioma}{\code{character} Idioma para la consulta de los metadatos devueltos por el servidor.
 \itemize{
-\item "es" Español
-\item "en" Inglés
+\item "es" Español (por defecto).
+\item "en" Inglés.
 }}
 }
 \value{
-\code{\link[=data.frame]{data.frame()}} con las siguientes columnas:
+Un \code{data.frame} de una sola fila con las siguientes columnas:
 \itemize{
-\item idSerie Código de la serie
-\item titulo Nombre de la serie
-\item fechaInicio Fecha inicial desde la que se tiene registro
-\item fechaFin Fecha hasta la que se tiene registro
-\item periodicidad Frecuencia con la que se actualiza la información
-\item cifra .
-\item unidad Unidad de medida con la que se expresa la serie
-\item versionada \code{TRUE} o \code{FALSE}
+\item \strong{idSerie}: Código identificador de la serie.
+\item \strong{titulo}: Nombre descriptivo de la serie.
+\item \strong{fechaInicio}: Clase \code{Date}. Fecha inicial desde la que se tiene registro.
+\item \strong{fechaFin}: Clase \code{Date}. Fecha de la última actualización disponible.
+\item \strong{periodicidad}: Frecuencia con la que se actualiza la información (ej. Semanal).
+\item \strong{cifra}: Tipo de cifra (ej. Oportuna, Revisada).
+\item \strong{unidad}: Unidad de medida con la que se expresa la serie.
+\item \strong{versionada}: \code{logical}. \code{TRUE} o \code{FALSE} si la serie tiene múltiples versiones.
 }
 }
 \description{
-Consulta de metadatos en la API de banxico
+Extrae la información descriptiva (metadatos) asociada a una serie de tiempo
+específica desde el Sistema de Información Económica (SIE) de Banxico.
+}
+\details{
+Esta función es útil para conocer el contexto de la información antes de
+descargar los datos históricos. Permite verificar la fecha en la que inicia
+el registro, la periodicidad de actualización y la unidad de medida en la
+que está expresada la serie (ej. porcentajes, millones de pesos).
 }
 \examples{
-token <- "fb88d18e41bebb656375cd9b4db5878253b564b3742935ca96c9bd9fb67e1274"
-metadatos <- consultaApiMeta("SF43936", token = token)
+\dontrun{
+# 1. Asegúrate de tener configurado tu token
+# set_banxico_token("TU_TOKEN_AQUI")
 
+# 2. Consultar los metadatos de la Tasa de rendimiento de CETES 28
+metadatos <- consultaApiMeta(codigo = "SF43936")
+
+print(metadatos)
+}
 }

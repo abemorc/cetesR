@@ -4,4 +4,20 @@ export(consultaApiDatoUltimo)
 export(consultaApiDatos)
 export(consultaApiMeta)
 export(getBono)
+export(set_banxico_token)
 export(webscrapBonos)
+importFrom(dplyr,
+  distinct,
+  full_join,
+  mutate
+)
+importFrom(httr,
+  GET,
+  add_headers
+)
+importFrom(jsonlite,fromJSON)
+importFrom(lubridate,
+  days,
+  ymd
+)
+importFrom(utils,globalVariables)
