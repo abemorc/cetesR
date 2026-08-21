@@ -1,50 +1,80 @@
 
+# Consulta de metadatos de las series desde la API de Banxico
 
-#' Consulta de metadatos en la API de banxico
+#' Consulta de Metadatos en la API de Banxico
+#'
+#' @description
+#' Extrae la información descriptiva (metadatos) asociada a una serie de tiempo
+#' específica desde el Sistema de Información Económica (SIE) de Banxico.
+#'
+#' @details
+#' Esta función es útil para conocer el contexto de la información antes de
+#' descargar los datos históricos. Permite verificar la fecha en la que inicia
+#' el registro, la periodicidad de actualización y la unidad de medida en la
+#' que está expresada la serie (ej. porcentajes, millones de pesos).
 #'
 #' @inheritParams consultaApiDatos
 #'
-#' @return [data.frame()] con las siguientes columnas:
-#'    * idSerie Código de la serie
-#'    * titulo Nombre de la serie
-#'    * fechaInicio Fecha inicial desde la que se tiene registro
-#'    * fechaFin Fecha hasta la que se tiene registro
-#'    * periodicidad Frecuencia con la que se actualiza la información
-#'    * cifra .
-#'    * unidad Unidad de medida con la que se expresa la serie
-#'    * versionada `TRUE` o `FALSE`
+#' @return Un \code{data.frame} de una sola fila con las siguientes columnas:
+#'   \itemize{
+#'     \item \strong{idSerie}: Código identificador de la serie.
+#'     \item \strong{titulo}: Nombre descriptivo de la serie.
+#'     \item \strong{fechaInicio}: Clase \code{Date}. Fecha inicial desde la que se tiene registro.
+#'     \item \strong{fechaFin}: Clase \code{Date}. Fecha de la última actualización disponible.
+#'     \item \strong{periodicidad}: Frecuencia con la que se actualiza la información (ej. Semanal).
+#'     \item \strong{cifra}: Tipo de cifra (ej. Oportuna, Revisada).
+#'     \item \strong{unidad}: Unidad de medida con la que se expresa la serie.
+#'     \item \strong{versionada}: \code{logical}. \code{TRUE} o \code{FALSE} si la serie tiene múltiples versiones.
+#'   }
 #' @export
 #'
 #' @examples
-#' token <- "fb88d18e41bebb656375cd9b4db5878253b564b3742935ca96c9bd9fb67e1274"
-#' metadatos <- consultaApiMeta("SF43936", token = token)
+#' \dontrun{
+#' # 1. Asegúrate de tener configurado tu token
+#' # set_banxico_token("TU_TOKEN_AQUI")
 #'
-consultaApiMeta <- function(codigo, token, idioma="es") {
+#' # 2. Consultar los metadatos de la Tasa de rendimiento de CETES 28
+#' metadatos <- consultaApiMeta(codigo = "SF43936")
+#'
+#' print(metadatos)
+#' }
+consultaApiMeta <- function(codigo, token = Sys.getenv("BANXICO_TOKEN"), idioma = "es") {
+
+  # Validación de seguridad del token
+  if (identical(token, "")) {
+    stop("No se encontro un token de Banxico. Por favor, usa la funcion set_banxico_token('TU_TOKEN').", call. = FALSE)
+  }
 
   sitio <- "https://www.banxico.org.mx/SieAPIRest/service/v1/series/"
   language <- paste0("?locale=", idioma)
+
   solicitud <- paste0(sitio, codigo, language)
   encabezado <- httr::add_headers("Bmx-Token" = token, "Accept" = "application/json")
+
   respuesta <- httr::GET(solicitud, encabezado)
 
-  if(respuesta$status_code==200) {
+  if (respuesta$status_code == 200) {
 
     contenidoJson <- rawToChar(respuesta$content)
     datosRaw <- jsonlite::fromJSON(contenidoJson)
     datosReady <- datosRaw$bmx$series
 
-    datosReady["fechaInicio"] <- as.Date(datosReady[,"fechaInicio"], format = "%d/%m/%Y")
-    datosReady["fechaFin"] <- as.Date(datosReady[,"fechaFin"], format = "%d/%m/%Y")
-
+    # Limpieza y conversión de tipos de datos de forma segura
+    datosReady[["fechaInicio"]] <- as.Date(datosReady[["fechaInicio"]], format = "%d/%m/%Y")
+    datosReady[["fechaFin"]] <- as.Date(datosReady[["fechaFin"]], format = "%d/%m/%Y")
 
     return(datosReady)
 
   } else {
+
+    # Manejo estructurado de errores
     contenidoJson <- rawToChar(respuesta$content)
     datosRaw <- jsonlite::fromJSON(contenidoJson)
+
     mensaje <- datosRaw$error$mensaje
     detalle <- datosRaw$error$detalle
 
-    stop(paste(mensaje,": ",detalle))
+    stop(paste0("Error de Banxico (", respuesta$status_code, "): ", mensaje, " - ", detalle), call. = FALSE)
   }
 }
+

@@ -1,203 +1,226 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# cetesR
+# cetesR <a href="https://abemorc.github.io/cetesR/"><img src="man/figures/logo.png" align="right" height="139" alt="cetesR website" /></a>
 
 <!-- badges: start -->
 
-[![CRAN
-status](https://www.r-pkg.org/badges/version/cetesR)](https://CRAN.R-project.org/package=cetesR)
+[![R-CMD-check](https://github.com/abemorc/cetesR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/abemorc/cetesR/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+<!-- [![R-CRAN-check](https://www.r-pkg.org/badges/version/cetesR)](https://CRAN.R-project.org/package=cetesR) -->
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Repo
+Status](https://img.shields.io/badge/Repo%20Status-Active-0d6ef.svg?logo=github)](#)
+[![Hecho con
+R](https://img.shields.io/badge/Build_with-R-276dc3.svg?logo=r)](#)
+[![API
+Banxico](https://img.shields.io/badge/Data-Banxico_API-092243.svg)](#)
 <!-- badges: end -->
 
-Herramientas para trabajar con valores gubernamentales de México
+**cetesR** es un paquete de R diseñado para facilitar la extracción,
+procesamiento y análisis financiero de los valores gubernamentales de
+México (CETES, Bonos M y Udibonos). Obtiene información oficial
+directamente desde la API del Sistema de Información Económica (SIE) del
+**Banco de México (Banxico)** y la complementa con datos del mercado
+secundario.
+
+------------------------------------------------------------------------
 
 ## Instalación
 
-Usted puede instalar este paquete en su distribucion de R desde
-[GitHub](https://github.com/) with:
+Puedes instalar la versión de desarrollo de `cetesR` directamente desde
+GitHub utilizando el paquete `devtools`:
 
 ``` r
-# install.packages("devtools")
+if (!require("devtools")) {
+  install.packages("devtools")
+}
+
 devtools::install_github("abemorc/cetesR")
 ```
 
-## Ojetivo
+------------------------------------------------------------------------
 
-Poder obtener y analizar informacón actualizada relacionada a los
-valores gubernamentales
+## Configuración de la API de Banxico (Token)
 
-## Uso
+Para utilizar las funciones de consulta, es necesario contar con un
+token de la API de Banxico, el cual es gratuito y se puede obtener sin
+necesidad de registro en su portal
+
+### ¿Cómo obtener tu token?
+
+1.  Ingresa al portal oficial del
+    [](https://www.banxico.org.mx/SieAPIRest/service/v1/token).
+2.  Ve a la parte de ‘Solicitar token’
+3.  Introduce el captcha y presiona `Generar Token`
+
+<!-- > *[ Opcional: Aquí puedes insertar tu GIF mostrando los clics en la página de Banxico ]* -->
+
+<img src="man/figures/tokenbanxi2.gif" width="100%" alt="Tutorial Token Banxico"/>
+
+### Configuración en R
+
+Una vez que tengas tu token, configúralo de forma segura utilizando la
+función `set_banxico_token()`. Si utilizas el argumento
+`install = TRUE`, el token se guardará en tu archivo `.Renviron` para
+que no tengas que escribirlo nunca más:
 
 ``` r
 library(cetesR)
 
-token <- '98f028f762387fd81728858fca4cc4e1ddaa4c538e3d6209f256a6a0ef25021b'
+# Configuración permanente recomendada
+set_banxico_token("TU_TOKEN_DE_BANXICO_AQUI", install = TRUE)
+```
 
-getBono(bono = 'cetes28', fechaInicial = '2023-12-01', fechaFinal = Sys.Date(), token)
-#> $Metadatos
+*(Nota: Si usaste `install = TRUE`, recuerda reiniciar tu sesión de R
+con `Ctrl + Shift + F10` la primera vez).*
+
+------------------------------------------------------------------------
+
+## Casos de Uso
+
+El diseño de las funciones de `cetesR`, en particular el orquestador
+`getBono`, está pensado para ahorrar horas de limpieza de datos,
+entregando información lista para análisis cuantitativo:
+
+- **Integridad de Series de Tiempo:** Al extraer los datos primarios, la
+  función cruza y alinea automáticamente los plazos, montos asignados y
+  tasas de rendimiento basándose en la fecha exacta de la subasta. Esto
+  elimina los riesgos de desalineación, entregando insumos limpios que
+  pueden inyectarse directamente en modelos de pronóstico temporal o
+  evaluación de volatilidades.
+- **Cálculo Automático de Redención:** Por defecto, la API oficial no
+  detalla cuándo vence un instrumento. El paquete calcula y anexa
+  automáticamente la columna `Fecharedencion`, un dato algorítmico
+  esencial para estructurar flujos de efectivo, valuar instrumentos
+  derivados o proyectar tablas de contingencia sin requerir cálculos
+  manuales posteriores.
+
+### 1. Consultar información integral de un instrumento (`getBono`)
+
+La función principal del paquete consolida los datos históricos de
+plazos, montos asignados, tasas de rendimiento y la información del
+mercado secundario en una sola lista estructurada:
+
+``` r
+library(cetesR)
+
+# Obtener toda la información histórica y reciente de CETES a 28 días
+cetes_28 <- getBono(
+  bono = "cetes28", 
+  fechaInicial = "2023-01-01", 
+  fechaFinal = Sys.Date()
+)
+
+# Revisar los metadatos oficiales de la serie
+head(cetes_28$Metadatos)
 #>   idSerie
 #> 1 SF43936
 #>                                                                                                                                           titulo
 #> 1 Valores gubernamentales                        Resultados de la subasta semanal Tasa de rendimiento                            Cetes a 28 días
 #>   fechaInicio   fechaFin periodicidad       cifra      unidad versionada
-#> 1  1982-09-02 2024-05-16       Diaria Porcentajes Porcentajes      FALSE
+#> 1  1982-09-02 2026-08-20       Diaria Porcentajes Porcentajes      FALSE
+
+# Consultar las primeras filas del data.frame consolidado de tasas y montos
+head(cetes_28$cetes28_Datos)
+#>   Fecha_emision Plazo Monto_asignado Tasa_rendimiento Fecharedencion
+#> 1    2023-01-05    28          15000            10.49     2023-02-02
+#> 2    2023-01-12    28          15000            10.46     2023-02-09
+#> 3    2023-01-19    28          12500            10.70     2023-02-16
+#> 4    2023-01-26    28          12500            10.80     2023-02-23
+#> 5    2023-02-02    28          12500            10.78     2023-03-02
+#> 6    2023-02-09    28          12500            10.82     2023-03-09
+```
+
+### 2. Visualización rápida del rendimiento histórico
+
+Gracias a que la estructura devuelta se integra de forma nativa con el
+*tidyverse*, puedes generar gráficos analíticos en cuestión de segundos
+utilizando `ggplot2`:
+
+``` r
+library(ggplot2)
+
+# Gráfico de la evolución de la tasa de rendimiento de CETES 28 días
+ggplot(cetes_28$cetes28_Datos, aes(x = Fecha_emision, y = Tasa_rendimiento)) +
+  geom_line(color = "#1b396a", linewidth = 0.8) +
+  labs(
+    title = "Evolución Histórica - CETES 28 días",
+    subtitle = "Fuente: Banco de México (cetesR)",
+    x = "Fecha de Emisión",
+    y = "Tasa de Rendimiento (%)"
+  ) +
+  theme_minimal()
+```
+
+<img src="man/figures/unnamed-chunk-3-1.png" alt="" width="100%" />
+
+### 3. Modelado Cuantitativo: Distribución y Posicionamiento Histórico
+
+En finanzas cuantitativas, evaluar si el entorno actual de tasas es
+anómalo requiere analizar la distribución histórica completa. Gracias a
+la estructura de panel que devuelve `cetesR`, podemos generar un gráfico
+de densidad probabilística en un par de líneas para observar en qué
+percentil de la historia nos encontramos hoy.
+
+``` r
+library(cetesR)
+library(ggplot2)
+library(dplyr)
 #> 
-#> $cetes28_Datos
-#>    Fecha_emision Plazo Monto_asignado Tasa_rendimiento Fecharedencion
-#> 1     2023-12-07    28           8500            11.25     2024-01-04
-#> 2     2023-12-14    28           8500            11.25     2024-01-11
-#> 3     2023-12-21    28           6000            11.09     2024-01-18
-#> 4     2023-12-28    28           8500            11.26     2024-01-25
-#> 5     2024-01-04    28          15000            11.30     2024-02-01
-#> 6     2024-01-11    28          15000            11.28     2024-02-08
-#> 7     2024-01-18    28          10000            11.30     2024-02-15
-#> 8     2024-01-25    28          10000            11.28     2024-02-22
-#> 9     2024-02-01    28          10000            11.15     2024-02-29
-#> 10    2024-02-08    28          10000            11.06     2024-03-07
-#> 11    2024-02-15    28          10000            11.05     2024-03-14
-#> 12    2024-02-22    28          10000            11.00     2024-03-21
-#> 13    2024-02-29    27          10000            11.00     2024-03-27
-#> 14    2024-03-07    28          10000            11.00     2024-04-04
-#> 15    2024-03-14    28          18000            11.18     2024-04-11
-#> 16    2024-03-21    28          10000            10.99     2024-04-18
-#> 17    2024-03-27    29          10000            10.90     2024-04-25
-#> 18    2024-04-04    28          10000            10.88     2024-05-02
-#> 19    2024-04-11    28          10000            10.92     2024-05-09
-#> 20    2024-04-18    28          10000            11.04     2024-05-16
-#> 21    2024-04-25    28          10000            11.04     2024-05-23
-#> 22    2024-05-02    28          10000            10.95     2024-05-30
-#> 23    2024-05-09    28          10000            11.03     2024-06-06
-#> 24    2024-05-16    28          10000            10.95     2024-06-13
+#> Adjuntando el paquete: 'dplyr'
+#> The following objects are masked from 'package:stats':
 #> 
-#> $Mercado_secundario
-#> # A tibble: 12 × 8
-#>    Name       Yield Prev.  High   Low  Chg. `Chg. %` Time 
-#>    <chr>      <dbl> <dbl> <dbl> <dbl> <dbl> <chr>    <chr>
-#>  1 Mexico 1M  11.5  11.0  11.0  11.0  0.576 +5.25%   15/05
-#>  2 Mexico 3M  11.6  11.2  11.2  11.2  0.478 +4.28%   15/05
-#>  3 Mexico 6M  11.6  11.3  11.3  11.3  0.331 +2.94%   15/05
-#>  4 Mexico 9M  11.4  11.3  11.4  11.4  0.152 +1.35%   14/05
-#>  5 Mexico 1Y  11.3  11.3  11.3  11.3  0.01  0.09%    15/05
-#>  6 Mexico 3Y  10.3   9.95 10.0   9.95 0.392 +3.93%   15/05
-#>  7 Mexico 5Y  10.1   9.69  9.72  9.69 0.377 +3.88%   15/05
-#>  8 Mexico 7Y  10.0   9.65  9.67  9.65 0.359 +3.72%   15/05
-#>  9 Mexico 10Y  9.98  9.61  9.63  9.61 0.363 +3.78%   15/05
-#> 10 Mexico 15Y 10.0   9.66  9.69  9.66 0.371 +3.84%   15/05
-#> 11 Mexico 20Y 10.1   9.72  9.78  9.72 0.375 +3.85%   15/05
-#> 12 Mexico 30Y 10.1   9.70  9.76  9.70 0.375 +3.86%   15/05
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+# 1. Extraemos la tasa de rendimiento más reciente del objeto que ya descargamos
+tasa_actual <- cetes_28$cetes28_Datos |> 
+  filter(Fecha_emision == max(Fecha_emision, na.rm = TRUE)) |> 
+  pull(Tasa_rendimiento) |> 
+  first()
+
+# 2. Generamos el gráfico de densidad histórica
+ggplot(cetes_28$cetes28_Datos, aes(x = Tasa_rendimiento)) +
+  geom_density(fill = "#1b396a", alpha = 0.5, color = "#092243", linewidth = 0.8) +
+  geom_vline(xintercept = tasa_actual, color = "#d9534f", linetype = "dashed", linewidth = 1.2) +
+  annotate(
+    "text", x = tasa_actual + 0.3, y = 0.05, 
+    label = paste("Nivel Actual:", tasa_actual, "%"), 
+    color = "#d9534f", angle = 90, fontface = "bold"
+  ) +
+  labs(
+    title = "Distribución Histórica de la Tasa CETES 28 de 2023 a 2026",
+    subtitle = "Análisis de densidad probabilística y entorno actual",
+    x = "Tasa de Rendimiento (%)",
+    y = "Densidad"
+  ) +
+  theme_minimal()
 ```
 
-Estos son los principales instrumentos que se puede evaluar
+<img src="man/figures/unnamed-chunk-4-1.png" alt="" width="100%" />
+
+### 4. Consultas directas a la API (Series individuales)
+
+Si solo requieres consultar una serie específica mediante su
+identificador oficial de Banxico:
 
 ``` r
-
-catalogo_series
-#> # A tibble: 16 × 4
-#>    Instrumento Plazo    Monto_Asignado Tasa_Rendimiento
-#>    <chr>       <chr>    <chr>          <chr>           
-#>  1 cetes28     SF43935  SF43937        SF43936         
-#>  2 cetes91     SF43938  SF43940        SF43939         
-#>  3 cetes182    SF43941  SF43943        SF43942         
-#>  4 cetes364    SF43944  SF43946        SF43945         
-#>  5 cetes728    SF349778 SF349780       SF349785        
-#>  6 bonosM3     SF43882  SF43884        SF43883         
-#>  7 bonosM5     SF43885  SF43887        SF43886         
-#>  8 bonosM7     SF44945  SF44947        SF44946         
-#>  9 bonosM10    SF44070  SF44072        SF44071         
-#> 10 bonosM20    SF45383  SF45385        SF45384         
-#> 11 bonosM30    SF60689  SF60690        SF60696         
-#> 12 udibonos3   SF61593  SF61594        SF61592         
-#> 13 udibonos5   SF43926  SF43928        SF43927         
-#> 14 udibonos10  SF43923  SF43925        SF43924         
-#> 15 udibonos20  SF46957  SF46959        SF46958         
-#> 16 udibonos30  SF46960  SF46962        SF46961
+# Obtener el último dato oportuno publicado para la tasa de CETES 28 (SF43718)
+ultimo_dato <- consultaApiDatoUltimo(codigo = "SF43718")
+print(ultimo_dato)
+#>        Fecha SF43718
+#> 1 2026-08-20 16.9583
 ```
 
-``` r
-summary(catalogo_series)
-#>  Instrumento           Plazo           Monto_Asignado     Tasa_Rendimiento  
-#>  Length:16          Length:16          Length:16          Length:16         
-#>  Class :character   Class :character   Class :character   Class :character  
-#>  Mode  :character   Mode  :character   Mode  :character   Mode  :character
-```
+------------------------------------------------------------------------
 
-Obtener la informacion correspondiente al instrumento financiero
+## Contribuciones y Soporte
 
-``` r
-
-webscrapBonos()
-#> # A tibble: 12 × 8
-#>    Name       Yield Prev.  High   Low  Chg. `Chg. %` Time 
-#>    <chr>      <dbl> <dbl> <dbl> <dbl> <dbl> <chr>    <chr>
-#>  1 Mexico 1M  11.5  11.0  11.0  11.0  0.576 +5.25%   15/05
-#>  2 Mexico 3M  11.6  11.2  11.2  11.2  0.478 +4.28%   15/05
-#>  3 Mexico 6M  11.6  11.3  11.3  11.3  0.331 +2.94%   15/05
-#>  4 Mexico 9M  11.4  11.3  11.4  11.4  0.152 +1.35%   14/05
-#>  5 Mexico 1Y  11.3  11.3  11.3  11.3  0.01  0.09%    15/05
-#>  6 Mexico 3Y  10.3   9.95 10.0   9.95 0.392 +3.93%   15/05
-#>  7 Mexico 5Y  10.1   9.69  9.72  9.69 0.377 +3.88%   15/05
-#>  8 Mexico 7Y  10.0   9.65  9.67  9.65 0.359 +3.72%   15/05
-#>  9 Mexico 10Y  9.98  9.61  9.63  9.61 0.363 +3.78%   15/05
-#> 10 Mexico 15Y 10.0   9.66  9.69  9.66 0.371 +3.84%   15/05
-#> 11 Mexico 20Y 10.1   9.72  9.78  9.72 0.375 +3.85%   15/05
-#> 12 Mexico 30Y 10.1   9.70  9.76  9.70 0.375 +3.86%   15/05
-```
-
-Ejemplo de consulta del la informacion correspondiente a la ultima
-subasta de los cetes
-
-``` r
-datos <- consultaApiDatoUltimo("SF43936", token = token)
-```
-
-Ejemplo de los metadatos obtenidos
-
-``` r
-consultaApiMeta("SF43936", token = token)
-#>   idSerie
-#> 1 SF43936
-#>                                                                                                                                           titulo
-#> 1 Valores gubernamentales                        Resultados de la subasta semanal Tasa de rendimiento                            Cetes a 28 días
-#>   fechaInicio   fechaFin periodicidad       cifra      unidad versionada
-#> 1  1982-09-02 2024-05-16       Diaria Porcentajes Porcentajes      FALSE
-```
-
-Ejemplo del historico de datos de los cetes
-
-``` r
-consultaApiDatos("SF43936", '2023-11-01' ,Sys.Date(), token = token)
-#>         Fecha SF43936
-#> 1  2023-11-01   11.09
-#> 2  2023-11-09   10.95
-#> 3  2023-11-16   10.87
-#> 4  2023-11-23   10.75
-#> 5  2023-11-30   10.78
-#> 6  2023-12-07   11.25
-#> 7  2023-12-14   11.25
-#> 8  2023-12-21   11.09
-#> 9  2023-12-28   11.26
-#> 10 2024-01-04   11.30
-#> 11 2024-01-11   11.28
-#> 12 2024-01-18   11.30
-#> 13 2024-01-25   11.28
-#> 14 2024-02-01   11.15
-#> 15 2024-02-08   11.06
-#> 16 2024-02-15   11.05
-#> 17 2024-02-22   11.00
-#> 18 2024-02-29   11.00
-#> 19 2024-03-07   11.00
-#> 20 2024-03-14   11.18
-#> 21 2024-03-21   10.99
-#> 22 2024-03-27   10.90
-#> 23 2024-04-04   10.88
-#> 24 2024-04-11   10.92
-#> 25 2024-04-18   11.04
-#> 26 2024-04-25   11.04
-#> 27 2024-05-02   10.95
-#> 28 2024-05-09   11.03
-#> 29 2024-05-16   10.95
-```
-
-Informacion obtenida de www.banxico.com
+Las contribuciones, reportes de errores y sugerencias son completamente
+bienvenidos. Por favor, abre un *Issue* en el repositorio de GitHub para
+discutir cualquier mejora propuesta.

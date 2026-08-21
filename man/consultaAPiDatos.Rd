@@ -2,48 +2,67 @@
 % Please edit documentation in R/consultaApiDatos.R
 \name{consultaApiDatos}
 \alias{consultaApiDatos}
-\title{Consulta de datos en la API de banxico}
+\title{Consulta de Datos Históricos en la API de Banxico}
 \usage{
 consultaApiDatos(
   codigo,
   fechaInicial = NULL,
   fechaFinal = NULL,
-  token,
+  token = Sys.getenv("BANXICO_TOKEN"),
   idioma = "es"
 )
 }
 \arguments{
-\item{codigo}{Código de la serie de tiempo a consultar, puede consultar el
-código mediante \code{\link[=catalogo_series]{catalogo_series()}}.}
+\item{codigo}{\code{character} Código exacto de la serie de tiempo a consultar.
+Puede buscar el código correspondiente a cada instrumento mediante el dataset interno \code{catalogo_series}.}
 
-\item{fechaInicial}{Fecha a partir de la cual se quiere consultar los datos.}
+\item{fechaInicial}{\code{character} o \code{Date}. Fecha a partir de la cual se quiere consultar los datos (formato "YYYY-MM-DD").}
 
-\item{fechaFinal}{Fecha hasta la cual se quiere consultar los datos, puede
-usar \code{\link[=Sys.Date]{Sys.Date()}} para que la fecha de la consulta sea hasta la fecha
-actual}
+\item{fechaFinal}{\code{character} o \code{Date}. Fecha hasta la cual se quiere consultar los datos. Se recomienda usar \code{Sys.Date()} para la fecha actual.}
 
-\item{token}{Token proporcionado por Banxico para la consulta. Puede
-obtenerlo en la pagina de
-\href{https://www.banxico.org.mx/SieAPIRest/service/v1/token}{Banxico}}
+\item{token}{\code{character}. Token de autenticación proporcionado por Banxico.
+Por defecto, lo busca en la variable de entorno \code{BANXICO_TOKEN}.
+Se recomienda configurarlo previamente con \code{set_banxico_token()}.}
 
-\item{idioma}{\code{character}  Idioma para la consulta de los metadatos.
+\item{idioma}{\code{character} Idioma para la consulta de los metadatos devueltos por el servidor.
 \itemize{
-\item "es" Español
-\item "en" Inglés
+\item "es" Español (por defecto).
+\item "en" Inglés.
 }}
 }
 \value{
-\code{\link[=data.frame]{data.frame()}} con las siguientes columnas:
+Un \code{data.frame} estructurado con dos columnas:
 \itemize{
-\item \strong{Fecha}
-\item \strong{Código de la serie}
+\item \strong{Fecha}: Clase \code{Date}.
+\item \strong{Código de la serie}: Clase \code{numeric} con los valores correspondientes.
 }
 }
 \description{
-Consulta de datos en la API de banxico
+Extrae la serie de tiempo histórica de un instrumento financiero directamente
+desde el Sistema de Información Económica (SIE) del Banco de México (Banxico).
+}
+\details{
+Esta función realiza una petición HTTP tipo GET a la API REST de Banxico.
+Procesa la respuesta en formato JSON, estructura los datos y realiza la
+conversión automática de tipos (las fechas se transforman a clase \code{Date}
+y los valores a clase \code{numeric}).
+
+En caso de que el servidor devuelva un error (como un token inválido, exceder
+el límite de consultas o solicitar una serie inexistente), la función captura
+y muestra el mensaje oficial detallado de Banxico.
 }
 \examples{
-token <- "fb88d18e41bebb656375cd9b4db5878253b564b3742935ca96c9bd9fb67e1274"
-datos <- consultaApiDatos("SF43936", '2020-01-01', Sys.Date(), token = token)
+\dontrun{
+# 1. Configurar el token previamente
+# set_banxico_token("TU_TOKEN_AQUI")
 
+# 2. Consultar la serie histórica (ej. Tasa de rendimiento CETES 28)
+datos_cetes <- consultaApiDatos(
+  codigo = "SF43936",
+  fechaInicial = '2020-01-01',
+  fechaFinal = Sys.Date()
+)
+
+head(datos_cetes)
+}
 }
