@@ -27,14 +27,15 @@ devtools::install_github("abemorc/cetesR")
 
 ## Configuración de la API de Banxico (Token)
 
-Para utilizar las funciones de consulta, es necesario contar con un
-token de la API de Banxico, el cual es gratuito y se puede obtener sin
-necesidad de registro en su portal
+Debido a que los datos se obtienen en tiempo real del Banco de Mexico,
+es necesario contar con un token de la API de Banxico para utilizar las
+funciones de consulta. El token es gratuito y personal. Se puede obtener
+sin necesidad de registro alguno en su portal.
 
 ### ¿Cómo obtener tu token?
 
-1.  Ingresa al portal oficial del
-    [](https://www.banxico.org.mx/SieAPIRest/service/v1/token).
+1.  Ingresa al portal oficial de la API de Banxico
+    <https://www.banxico.org.mx/SieAPIRest/service/v1/token>.
 2.  Ve a la parte de ‘Solicitar token’
 3.  Introduce el captcha y presiona `Generar Token`
 
@@ -46,18 +47,26 @@ Una vez que tengas tu token, configúralo de forma segura utilizando la
 función
 [`set_banxico_token()`](https://abemorc.github.io/cetesR/reference/set_banxico_token.md).
 Si utilizas el argumento `install = TRUE`, el token se guardará en tu
-archivo `.Renviron` para que no tengas que escribirlo nunca más:
+archivo `.Renviron`.
+
+De esta forma, el proceso de obtener el token de Banxico y almacenarlo,
+solo se tendrá que hacer una vez, y estará disponible en todas las
+siguientes sesiones de R.
 
 ``` r
 
 library(cetesR)
 
-# Configuración permanente recomendada
-set_banxico_token("TU_TOKEN_DE_BANXICO_AQUI", install = TRUE)
+# Configuración recomendada
+set_banxico_token("PEGA_TU_TOKEN_DE_BANXICO_AQUI", install = TRUE)
 ```
 
-*(Nota: Si usaste `install = TRUE`, recuerda reiniciar tu sesión de R
-con `Ctrl + Shift + F10` la primera vez).*
+*(Nota: Si se usa `install = TRUE`, es necesario reiniciar tu sesión de
+R, Esto solo es necesario en la primera vez que se configura).*
+
+*En caso de usar `install = FALSE`, el token se almacenara solo
+temporalmente durante la sesion de R actual y no es necesario reiniciar
+en este caso*
 
 ------------------------------------------------------------------------
 
@@ -141,18 +150,18 @@ ggplot(cetes_28$cetes28_Datos, aes(x = Fecha_emision, y = Tasa_rendimiento)) +
 
 ![](reference/figures/unnamed-chunk-3-1.png)
 
-### 3. Modelado Cuantitativo: Curva de Rendimiento (Yield Curve)
+### 3. Modelado Cuantitativo: Distribución y Posicionamiento Histórico
 
-La estructura temporal de las tasas de interés es un pilar para la
-valoración financiera y el modelado de riesgos. Al estar diseñado para
-integrarse con el ecosistema moderno de R, puedes iterar fácilmente
-sobre las funciones de `cetesR` para extraer las tasas actuales y
-construir la curva de rendimiento libre de riesgo en instantes:
+En finanzas cuantitativas, evaluar si el entorno actual de tasas es
+anómalo requiere analizar la distribución histórica completa. Gracias a
+la estructura de panel que devuelve `cetesR`, podemos generar un gráfico
+de densidad probabilística en un par de líneas para observar en qué
+percentil de la historia nos encontramos hoy.
 
 ``` r
 
-
 library(cetesR)
+library(ggplot2)
 library(dplyr)
 #> 
 #> Adjuntando el paquete: 'dplyr'
@@ -162,39 +171,34 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
-library(purrr)
-library(ggplot2)
 
-# 1. Definir los códigos de Banxico para las tasas de CETES (28, 91, 182, 364 y 728 días)
-# Se corrigió el código de 728 días por SF336711 (Tasa de rendimiento)
-codigos_cetes <- c("SF43718", "SF43773", "SF43878", "SF43936", "SF336711")
-plazos_dias <- c(28, 91, 182, 364, 728)
+# 1. Extraemos la tasa de rendimiento más reciente del objeto que ya descargamos
+tasa_actual <- cetes_28$cetes28_Datos |> 
+  filter(Fecha_emision == max(Fecha_emision, na.rm = TRUE)) |> 
+  pull(Tasa_rendimiento) |> 
+  first()
 
-# 2. Extraer el último dato oportuno para cada plazo y unificar el nombre de la columna
-curva_tasas <- map_dfr(codigos_cetes, function(codigo) {
-  df <- consultaApiDatoUltimo(codigo)
-  names(df)[2] <- "Tasa_rendimiento" # Estandarizamos el nombre para poder graficar
-  return(df)
-}) |> 
-  mutate(Plazo = plazos_dias)
-
-# 3. Visualizar la estructura de la curva
-ggplot(curva_tasas, aes(x = Plazo, y = Tasa_rendimiento)) +
-  geom_line(color = "#1b396a", linewidth = 1) +
-  geom_point(color = "#0d6efd", size = 3) +
-  scale_x_continuous(breaks = plazos_dias) +
+# 2. Generamos el gráfico de densidad histórica
+ggplot(cetes_28$cetes28_Datos, aes(x = Tasa_rendimiento)) +
+  geom_density(fill = "#1b396a", alpha = 0.5, color = "#092243", linewidth = 0.8) +
+  geom_vline(xintercept = tasa_actual, color = "#d9534f", linetype = "dashed", linewidth = 1.2) +
+  annotate(
+    "text", x = tasa_actual + 0.3, y = 0.05, 
+    label = paste("Nivel Actual:", tasa_actual, "%"), 
+    color = "#d9534f", angle = 90, fontface = "bold"
+  ) +
   labs(
-    title = "Curva de Rendimiento - Valores Gubernamentales (CETES)",
-    subtitle = "Insumo base para construcción de portafolios y valoración de derivados",
-    x = "Plazo al Vencimiento (Días)",
-    y = "Tasa de Rendimiento (%)"
+    title = "Distribución Histórica de la Tasa CETES 28 de 2023 a 2026",
+    subtitle = "Análisis de densidad probabilística y entorno actual",
+    x = "Tasa de Rendimiento (%)",
+    y = "Densidad"
   ) +
   theme_minimal()
 ```
 
 ![](reference/figures/unnamed-chunk-4-1.png)
 
-### 3. Consultas directas a la API (Series individuales)
+### 4. Consultas directas a la API (Series individuales)
 
 Si solo requieres consultar una serie específica mediante su
 identificador oficial de Banxico:
@@ -213,8 +217,8 @@ print(ultimo_dato)
 ## Contribuciones y Soporte
 
 Las contribuciones, reportes de errores y sugerencias son completamente
-bienvenidos. Por favor, abre un *Issue* en el repositorio de GitHub para
-discutir cualquier mejora propuesta.
+bienvenidos. Por favor, abre un *Issue* en GitHub para cualquier mejora
+propuesta.
 
 # Package index
 
@@ -223,7 +227,7 @@ discutir cualquier mejora propuesta.
 - [`catalogo_series`](https://abemorc.github.io/cetesR/reference/catalogo_series.md)
   : Catálogo Oficial de Series de Valores Gubernamentales
 - [`consultaApiDatos()`](https://abemorc.github.io/cetesR/reference/consultaApiDatos.md)
-  : Consulta de Datos Históricos en la API de Banxico
+  : Consulta de Datos Históricos en la API de Banxico,
 - [`consultaApiDatoUltimo()`](https://abemorc.github.io/cetesR/reference/consultaApiDatoUltimo.md)
   : Consulta del Valor Más Reciente de una Serie
 - [`consultaApiMeta()`](https://abemorc.github.io/cetesR/reference/consultaApiMeta.md)

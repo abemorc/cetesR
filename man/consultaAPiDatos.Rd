@@ -2,7 +2,7 @@
 % Please edit documentation in R/consultaApiDatos.R
 \name{consultaApiDatos}
 \alias{consultaApiDatos}
-\title{Consulta de Datos Históricos en la API de Banxico}
+\title{Consulta de Datos Históricos en la API de Banxico,}
 \usage{
 consultaApiDatos(
   codigo,

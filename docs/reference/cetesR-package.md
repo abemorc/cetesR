@@ -41,8 +41,8 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Abelardo Morales <abemorca@gmail.com>
+**Maintainer**: Abelardo Morales Calva <abemorca@gmail.com>
 
 Authors:
 
-- Abelardo Morales <abemorca@gmail.com>
+- Abelardo Morales Calva <abemorca@gmail.com>

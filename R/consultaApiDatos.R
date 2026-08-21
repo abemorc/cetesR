@@ -1,6 +1,6 @@
 # Consulta de información histórica desde la API de Banxico
 
-#' Consulta de Datos Históricos en la API de Banxico
+#' Consulta de Datos Históricos en la API de Banxico,
 #'
 #' @description
 #' Extrae la serie de tiempo histórica de un instrumento financiero directamente

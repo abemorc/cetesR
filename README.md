@@ -45,14 +45,15 @@ devtools::install_github("abemorc/cetesR")
 
 ## Configuración de la API de Banxico (Token)
 
-Para utilizar las funciones de consulta, es necesario contar con un
-token de la API de Banxico, el cual es gratuito y se puede obtener sin
-necesidad de registro en su portal
+Debido a que los datos se obtienen en tiempo real del Banco de Mexico,
+es necesario contar con un token de la API de Banxico para utilizar las
+funciones de consulta. El token es gratuito y personal. Se puede obtener
+sin necesidad de registro alguno en su portal.
 
 ### ¿Cómo obtener tu token?
 
-1.  Ingresa al portal oficial del
-    [](https://www.banxico.org.mx/SieAPIRest/service/v1/token).
+1.  Ingresa al portal oficial de la API de Banxico
+    <https://www.banxico.org.mx/SieAPIRest/service/v1/token>.
 2.  Ve a la parte de ‘Solicitar token’
 3.  Introduce el captcha y presiona `Generar Token`
 
@@ -64,18 +65,25 @@ necesidad de registro en su portal
 
 Una vez que tengas tu token, configúralo de forma segura utilizando la
 función `set_banxico_token()`. Si utilizas el argumento
-`install = TRUE`, el token se guardará en tu archivo `.Renviron` para
-que no tengas que escribirlo nunca más:
+`install = TRUE`, el token se guardará en tu archivo `.Renviron`.
+
+De esta forma, el proceso de obtener el token de Banxico y almacenarlo,
+solo se tendrá que hacer una vez, y estará disponible en todas las
+siguientes sesiones de R.
 
 ``` r
 library(cetesR)
 
-# Configuración permanente recomendada
-set_banxico_token("TU_TOKEN_DE_BANXICO_AQUI", install = TRUE)
+# Configuración recomendada
+set_banxico_token("PEGA_TU_TOKEN_DE_BANXICO_AQUI", install = TRUE)
 ```
 
-*(Nota: Si usaste `install = TRUE`, recuerda reiniciar tu sesión de R
-con `Ctrl + Shift + F10` la primera vez).*
+*(Nota: Si se usa `install = TRUE`, es necesario reiniciar tu sesión de
+R, Esto solo es necesario en la primera vez que se configura).*
+
+*En caso de usar `install = FALSE`, el token se almacenara solo
+temporalmente durante la sesion de R actual y no es necesario reiniciar
+en este caso*
 
 ------------------------------------------------------------------------
 
@@ -222,5 +230,5 @@ print(ultimo_dato)
 ## Contribuciones y Soporte
 
 Las contribuciones, reportes de errores y sugerencias son completamente
-bienvenidos. Por favor, abre un *Issue* en el repositorio de GitHub para
-discutir cualquier mejora propuesta.
+bienvenidos. Por favor, abre un *Issue* en GitHub para cualquier mejora
+propuesta.

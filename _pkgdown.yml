@@ -3,5 +3,5 @@ template:
   bootstrap: 5
 footer:
   structure:
-    left: ""
+    left: ~
     right: package

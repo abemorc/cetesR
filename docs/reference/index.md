@@ -5,7 +5,7 @@
 - [`catalogo_series`](https://abemorc.github.io/cetesR/reference/catalogo_series.md)
   : Catálogo Oficial de Series de Valores Gubernamentales
 - [`consultaApiDatos()`](https://abemorc.github.io/cetesR/reference/consultaApiDatos.md)
-  : Consulta de Datos Históricos en la API de Banxico
+  : Consulta de Datos Históricos en la API de Banxico,
 - [`consultaApiDatoUltimo()`](https://abemorc.github.io/cetesR/reference/consultaApiDatoUltimo.md)
   : Consulta del Valor Más Reciente de una Serie
 - [`consultaApiMeta()`](https://abemorc.github.io/cetesR/reference/consultaApiMeta.md)

@@ -1,4 +1,4 @@
-# Consulta de Datos Históricos en la API de Banxico
+# Consulta de Datos Históricos en la API de Banxico,
 
 Extrae la serie de tiempo histórica de un instrumento financiero
 directamente desde el Sistema de Información Económica (SIE) del Banco
